@@ -2,7 +2,11 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import japanize_matplotlib
+# japanize_matplotlibの代わりに直接フォント設定を行う
+import matplotlib as mpl
+
+# 日本語フォント設定（代替方法）
+plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif']
 
 # ページ設定
 st.set_page_config(
