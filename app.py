@@ -353,6 +353,128 @@ def display_results():
         st.session_state.completed = False
         st.rerun()
 
+# レーダーチャートを作成する関数
+def create_radar_chart(scores):
+    """
+    より美しく見やすいレーダーチャートを作成する関数
+    
+    Parameters:
+    -----------
+    scores : dict
+        各愛の言語のスコア
+        
+    Returns:
+    --------
+    plotly の Figure オブジェクト
+    """
+    # スコアとカテゴリの取得
+    labels = [love_languages[lang] for lang in ['words', 'time', 'gifts', 'service', 'touch']]
+    values = [scores[lang] for lang in ['words', 'time', 'gifts', 'service', 'touch']]
+    
+    # データを円形にするために最初の値を最後にも追加
+    labels_closed = labels + [labels[0]]
+    values_closed = values + [values[0]]
+    
+    # 最大値を計算
+    max_value = max(values)
+    
+    # カラー設定
+    main_color = '#4361EE'  # メインカラー
+    bg_color = 'rgba(240, 242, 246, 0.5)'  # バックグラウンド
+    grid_color = 'rgba(200, 200, 200, 0.6)'  # グリッド線
+    
+    fig = go.Figure()
+    
+    # スコアのプロット
+    fig.add_trace(go.Scatterpolar(
+        r=values_closed,
+        theta=labels_closed,
+        fill='toself',
+        name='あなたのスコア',
+        line=dict(
+            color=main_color,
+            width=3
+        ),
+        fillcolor=f'rgba(67, 97, 238, 0.3)',  # メインカラーに透明度追加
+        hoverinfo='text',
+        hovertext=[f'{labels[i]}: {values[i]}' for i in range(len(labels))] + [f'{labels[0]}: {values[0]}'],
+    ))
+    
+    # 軸の最大値を少し拡張して余白を作る
+    axis_max = max(12, max_value + 1)
+    
+    # レイアウト設定
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(
+                visible=True,
+                range=[0, axis_max],
+                tickfont=dict(size=11),
+                tickmode='linear',
+                nticks=6,  # 目盛りの数を調整
+                gridcolor=grid_color,
+                linecolor=grid_color,
+            ),
+            angularaxis=dict(
+                tickfont=dict(size=13, family="Arial, sans-serif"),
+                gridcolor=grid_color,
+                linecolor=grid_color,
+            ),
+            bgcolor=bg_color
+        ),
+        showlegend=False,  # 凡例は不要なので非表示
+        margin=dict(l=80, r=80, t=60, b=60),  # 余白を増やして見やすく
+        height=500,  # 適切な高さ
+        title=dict(
+            text="あなたの5つの愛の言語",
+            font=dict(size=18, family="Arial, sans-serif"),
+            x=0.5,
+            y=0.95
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',  # 透明な背景
+        plot_bgcolor='rgba(0,0,0,0)',
+    )
+    
+    # カテゴリごとのスコア表示を追加（チャート上部）
+    categories_text = '<br>'.join([f'<b>{labels[i]}:</b> {values[i]}' for i in range(len(labels))])
+    fig.add_annotation(
+        xref='paper',
+        yref='paper',
+        x=0.98,
+        y=0.98,
+        text=categories_text,
+        showarrow=False,
+        font=dict(size=12),
+        align='right',
+        bgcolor='rgba(255, 255, 255, 0.7)',
+        bordercolor='rgba(200, 200, 200, 0.8)',
+        borderwidth=1,
+        borderpad=4,
+        borderradius=4
+    )
+    
+    # 各カテゴリにカラーマーカーを追加
+    for i, (label, value) in enumerate(zip(labels, values)):
+        angle = (i / len(labels)) * 2 * np.pi
+        r_position = value
+        
+        # マーカーポイントを強調
+        fig.add_trace(go.Scatterpolar(
+            r=[r_position],
+            theta=[label],
+            mode='markers',
+            marker=dict(
+                size=10,
+                color=main_color,
+                line=dict(width=2, color='white')
+            ),
+            showlegend=False,
+            hoverinfo='text',
+            hovertext=f'{label}: {value}'
+        ))
+    
+    return fig
+
 # メイン処理
 if st.session_state.completed:
     display_results()
