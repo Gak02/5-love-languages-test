@@ -373,7 +373,7 @@ def display_results():
             'touch': 0
         }
         st.session_state.completed = False
-        st.experimental_rerun()
+        st.rerun()
 
 # メイン処理
 if st.session_state.completed:
@@ -392,12 +392,12 @@ else:
     with col1:
         if st.button(current_q["options"][0]["text"], use_container_width=True):
             next_question(current_q["options"][0]["language"])
-            st.experimental_rerun()
+            st.rerun()
     
     with col2:
         if st.button(current_q["options"][1]["text"], use_container_width=True):
             next_question(current_q["options"][1]["language"])
-            st.experimental_rerun()
+            st.rerun()
 
 # 最後に研究結果についての脚注を追加
 st.markdown("""
