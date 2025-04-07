@@ -449,8 +449,7 @@ def create_radar_chart(scores):
         bgcolor='rgba(255, 255, 255, 0.7)',
         bordercolor='rgba(200, 200, 200, 0.8)',
         borderwidth=1,
-        borderpad=4,
-        borderradius=4
+        borderpad=4
     )
     
     # 各カテゴリにカラーマーカーを追加
