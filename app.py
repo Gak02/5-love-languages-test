@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 # japanize_matplotlibの代わりに直接フォント設定を行う
 import matplotlib as mpl
+import plotly.graph_objects as go
 
 # 日本語フォント設定（代替方法）
 plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Hiragino Sans GB', 'Microsoft YaHei', 'sans-serif']
@@ -296,7 +297,7 @@ def display_results():
     
     # 主要な愛の言語の説明
     primary_language = results_df.iloc[0]['愛の言語']
-    st.subheader(f"あなたの主要な愛の言語は「{primary_language}」です")
+    st.subheader(f"あなたの最も重要な愛の言語は「{primary_language}」です")
     
     if primary_language == '言葉による肯定':
         st.markdown("""
@@ -324,32 +325,9 @@ def display_results():
         ハグ、キス、手をつなぐなどの身体的な近さが特に重要です。
         """)
     
-    # レーダーチャートを作成
-    fig = plt.figure(figsize=(10, 6))
-    ax = fig.add_subplot(111, polar=True)
-    
-    # データ準備（閉じた形にするため最初の値を最後にも追加）
-    values_closed = values + [values[0]]
-    labels_closed = labels + [labels[0]]
-    angles = np.linspace(0, 2*np.pi, len(labels), endpoint=False).tolist()
-    angles += [angles[0]]
-    
-    # プロット
-    ax.plot(angles, values_closed, 'o-', linewidth=2)
-    ax.fill(angles, values_closed, alpha=0.25)
-    
-    # レーダーチャートの設定
-    ax.set_thetagrids(np.degrees(angles[:-1]), labels)
-    ax.set_rlabel_position(0)
-    
-    max_value = max(values)
-    ax.set_yticks([i for i in range(max_value + 1) if i % 2 == 0])
-    ax.set_ylim(0, max_value)
-    
-    plt.title("5つの愛の言語スコア", size=15, y=1.1)
-    
-    # チャートをStreamlitに表示
-    st.pyplot(fig)
+    # 新しいレーダーチャートを作成して表示
+    fig = create_radar_chart(st.session_state.results)
+    st.plotly_chart(fig, use_container_width=True)
     
     # レーダーチャートの下にメッセージ
     st.markdown("""
